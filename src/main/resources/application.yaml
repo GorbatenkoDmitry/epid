@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/epid?currentSchema=epid
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+      continue-on-error: false
+      data-locations: classpath:demo_data.sql
+  security:
+    jwt:
+      secret: Ynpma2poZ2t1c2h2c2liaHhpdXNicGl1YmlndWZkYnNucGlnZmINCg
+      access: 1
+      refresh: 30
