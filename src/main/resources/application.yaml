@@ -6,11 +6,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
-      mode: never
+      mode: always
       continue-on-error: false
-      data-locations: classpath:demo_data.sql
-  security:
-    jwt:
-      secret: Ynpma2poZ2t1c2h2c2liaHhpdXNicGl1YmlndWZkYnNucGlnZmINCg
-      access: 1
-      refresh: 30
+#      data-locations: classpath:demo_data.sql
+security:
+  jwt:
+    secret: Ynpma2poZ2t1c2h2c2liaHhpdXNicGl1YmlndWZkYnNucGlnZmINCg
+    access: 1
+    refresh: 30

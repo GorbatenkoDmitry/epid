@@ -1,9 +1,7 @@
 package com.epid.epid.config;
-//класс отвечает за конфигурацию спринг секьюрити
 
-//пишем, что этот фаил конфигурационный(хотя по сути все эти аннотации сервис,конфигурэйшн делают примерно одно
-//  и то же, а именно помещают фаил в аппликатион контекст, то есть делают его видимым спрингу
-
+import com.epid.epid.web.security.JwtTokenFilter;
+import com.epid.epid.web.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +11,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//класс отвечает за конфигурацию спринг секьюрити
+
+//пишем, что этот фаил конфигурационный(хотя по сути все эти аннотации сервис,конфигурэйшн делают примерно одно
+//  и то же, а именно помещают фаил в аппликатион контекст, то есть делают его видимым спрингу
 
 @Configuration
 //Далее уже пишем аннотацию,которая включит спринг секьюрити и в ней же будет происходить насттройка
@@ -26,6 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 //и будем вызывать  конструкторы  со всем переменными
 @RequiredArgsConstructor
 public class ApplicationConfig {
+    private final JwtTokenProvider tokenProvider;
 
     //инжектим то есть вызываем в переменной класс ApplicationContext,который отвечает за создание и хранение бинов
     //в нем есть все созданные бины
@@ -55,47 +59,61 @@ return configuration.getAuthenticationManager();
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 //Сross Site Request Forgery) в переводе на русский — это подделка межсайтовых запросов
-                .csrf().disable()
+                .csrf(AbstractHttpConfigurer::disable)
                 //один сайт делает запрос другому, а у другого настройки можно ли отправлять данные, например фото
-                .cors()
-                .and()
+                .cors(AbstractHttpConfigurer::disable)
                 //Spring HttpSecurity httpBasic() Настраивает базовую аутентификацию HTTP.когда пароль в концоли.он нам не нужен
-                .httpBasic().disable()
+                .httpBasic(AbstractHttpConfigurer::disable)
                 //Spring HttpSecurity включаем sessionManagement() Позволяет настраивать управление сеансами.
-                .sessionManagement()
-                // SessionCreationPolicy.STATELESS в Spring Security означает, что приложение не будет
-                // использовать HTTP-сессии для хранения информации о безопасности (например, состояния
-                // аутентификации пользователя).
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement(sessionManagement ->
+                        sessionManagement
+                        // SessionCreationPolicy.STATELESS в Spring Security означает, что приложение не будет
+                        // использовать HTTP-сессии для хранения информации о безопасности (например, состояния
+                        // аутентификации пользователя).
+                        .sessionCreationPolicy(
+                                        SessionCreationPolicy.STATELESS
+                                )
+                )
                 //включили обработку исключений
-                .exceptionHandling()
-                //если авторизация не прошла,то выбрасывается исключение, что бы их ловить пишем лямду
-                .authenticationEntryPoint((request, response, authException) -> {
-                    //в ответ в метод setStatus передаем HttpStatus.UNAUTHORIZED
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                .exceptionHandling(configurer ->
+                        //если авторизация не прошла,то выбрасывается исключение, что бы их ловить пишем лямду
+                        configurer.authenticationEntryPoint(
+                                (request, response, exception) -> {
+//в ответ в метод setStatus передаем HttpStatus.UNAUTHORIZED
+                                    response.setStatus(
+                                            HttpStatus.UNAUTHORIZED
+                                                    .value()
+                                    );
                     //и пишем ответ
                     response.getWriter().write("Unauthorized.");
                 })
 //то же самое если доступ был запрещен
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setStatus(HttpStatus.FORBIDDEN.value());
-                    response.getWriter().write("Unauthorized.");
-                })
-                .and()
+                                .accessDeniedHandler(
+                                        (request, response, exception) -> {
+                                            response.setStatus(
+                                                    HttpStatus.FORBIDDEN
+                                                            .value()
+                                            );
+                                            response.getWriter()
+                                                    .write("Unauthorized.");
+                                        }))
 
                 //authorizeHttpRequests метод который позволяет вешать настройки проверки авторизован ли
                 //пользователь на это странице
-                .authorizeHttpRequests()
-                //requestMatchers конечная точка и проверка доступа permitAll-разрешать всем заъходить на эту страницу
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
+                .authorizeHttpRequests(configurer ->
+
+    //requestMatchers конечная точка и проверка доступа permitAll-разрешать всем заъходить на эту страницу
+                configurer.requestMatchers("/api/v1/auth/**")
+                .permitAll()
+                .requestMatchers("/swagger-ui/**")
+                .permitAll()
+                .requestMatchers("/v3/api-docs/**")
+                .permitAll()
                 //остальные запросы (без настройки) только авторизованным
-                .anyRequest().authenticated()
-                .and()
+                .anyRequest().authenticated())
+
                 //отключаем возможность анонимного посещения
-                .anonymous().disable()
+                 .anonymous(AbstractHttpConfigurer::disable)
 //Позволяет добавлять Filter перед одним из известных Filter классов.
                 //передаем два параметра JwtTokenFilter(tokenProvider)- два класса авторизации на токенах
                 // и класс перед которым он будет работать

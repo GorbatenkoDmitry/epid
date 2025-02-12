@@ -1,4 +1,4 @@
-package com.epid.epid.repository.impl;
+package com.epid.epid.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

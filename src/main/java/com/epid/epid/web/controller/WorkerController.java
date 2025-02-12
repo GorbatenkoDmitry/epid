@@ -20,11 +20,20 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class WorkerController {
     private final WorkerMapper workerMapper;
-    private final VaccinationsService vaccinationsService;
 
     private final WorkerService workerService;
-    private final VaccinationsMapper vaccinationsMapper;
 
+    @GetMapping("/{id}")
+    public WorkerDto getById(@PathVariable Long id){
+        Worker worker = workerService.getById(id);
+        return workerMapper.toDto(worker);
+    }
+
+    @GetMapping("/{name}/{surname}")
+    public WorkerDto getByNameSurname(@PathVariable String name,@PathVariable String surname){
+        Worker worker = workerService.getByNameSurname(name,surname);
+        return workerMapper.toDto(worker);
+    }
 
     @PutMapping
     public WorkerDto update(@Validated(OnUpdate.class) @RequestBody WorkerDto dto){
@@ -34,31 +43,9 @@ public class WorkerController {
         return workerMapper.toDto(updatedWorker);
     }
 
-
-    @GetMapping("/{id}")
-    public WorkerDto getById(@PathVariable Long id){
-        Worker worker = workerService.getById(id);
-        return workerMapper.toDto(worker);
-    }
-
    @DeleteMapping("/{id}")
         public void deleteById(@PathVariable Long id) {
             workerService.delete(id);
         }
-
-    @GetMapping("/{id}/vaccinations")
-    public VaccinationsDto getVaccinationsByWorkerId(@PathVariable Long id) {
-         Vaccinations vaccinations = vaccinationsService.getById(id);
-        return vaccinationsMapper.toDto(vaccinations);
-    }
-
-    @PostMapping("/{id}/vaccinations")
-
-    public VaccinationsDto createVaccinations(@PathVariable Long id, @Validated(OnCreate.class) @RequestBody VaccinationsDto dto
-    ) {
-        Vaccinations vaccinations = vaccinationsMapper.toEntity(dto);
-        Vaccinations createdVaccinations = vaccinationsService.create(vaccinations, id);
-        return vaccinationsMapper.toDto(createdVaccinations);
-    }
 
 }

@@ -14,6 +14,5 @@ public interface WorkerService {
     Worker update (Worker worker);
 
     Worker create (Worker worker);
-
     void delete (Long id);
 }
