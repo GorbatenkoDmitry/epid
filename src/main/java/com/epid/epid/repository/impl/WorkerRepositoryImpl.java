@@ -36,6 +36,22 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             FROM worker w
             WHERE w.name = ? AND w.surname = ?""";
 
+    private final String DELETE = """
+            DELETE FROM worker
+            WHERE id = ?""";
+
+    private final String CREATE = """
+            INSERT INTO worker (name,surname,status)
+            VALUES (?,?,?,?)""";
+
+    private final String UPDATE = """
+            UPDATE worker
+            SET name = ?,
+            surname = ?,
+            status = ?
+            WHERE id = ?""";
+
+
     @Override
     public Optional<Worker> findById(Long id) {
         try {
@@ -63,6 +79,11 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             throw new ResourceMappingException("Error while finding user by name,surname.");
         }
     }
+
+
+
+
+
     @Override
     public void update(Worker worker) {
 
@@ -73,16 +94,14 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 
         try {
             Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement statement = connection.prepareStatement(INSERT);
+            PreparedStatement statement = connection.prepareStatement(CREATE);
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (SQLException throwables) {
             throw new ResourceMappingException("Error while deleting task.");
         }
     }
-    private final String CREATE = """
-            INSERT FROM worker
-            WHERE id = ?""";
+
 
     @Override
     public void delete(Long id) {
@@ -101,13 +120,9 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 
     }
 
-    private final String DELETE = """
-            DELETE FROM worker
-            WHERE id = ?""";
 
 
-    public void insertWorkerStatus(Long workerId, Status status) {
 
-    }
+
 
 }
