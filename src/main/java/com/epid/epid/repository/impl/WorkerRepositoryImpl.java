@@ -81,12 +81,23 @@ public class WorkerRepositoryImpl implements WorkerRepository {
     }
 
 
-
-
-
     @Override
     public void update(Worker worker) {
+ try {      Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(UPDATE);
+            statement.setString(1, worker.getName());
+      if(worker.getSurname() ==null){
+statment.setNull(2, Types.VARCHAR);  
+} else {
+statment.setString(2, worker.getSurname());  
+}
+             statement.setString(3, worker.getStatus().name());
+             statement.setLong(4, worker.getId());
 
+                  statement.executeUpdate();
+ } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while UDATAING WORKING.");
+        }
     }
 
     @Override
@@ -98,7 +109,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (SQLException throwables) {
-            throw new ResourceMappingException("Error while deleting task.");
+            throw new ResourceMappingException("Error while CREATING WORKER.");
         }
     }
 
@@ -111,7 +122,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (SQLException throwables) {
-            throw new ResourceMappingException("Error while deleting task.");
+            throw new ResourceMappingException("Error while DELETING WORKER.");
         }
     }
 
