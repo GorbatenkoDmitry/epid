@@ -51,7 +51,11 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             status = ?
             WHERE id = ?""";
 
+    private final String INSERT_USER_STATUS = """
+          INSERT INTO worker_status (id,status)
+            VALUES (?,?)""";
 
+    
     @Override
     public Optional<Worker> findById(Long id) {
         try {
@@ -127,8 +131,17 @@ statment.setString(2, worker.getSurname());
     }
 
     @Override
-    public void insertWorkerStatus(Long workerId, Status status) {
+    public void insertWorkerStatus(Long Id, Status status) 
+      try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(INSERT_USER_STATUS);
+            statement.setLong(1, id);
+            statement.setString(2,status.name());
+            statement.executeUpdate();
 
+      } catch (SQLException throwables) {
+            throw new ResourceMappingException("Exception while inserting user stats.");
+        }
     }
 
 
