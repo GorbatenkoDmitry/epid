@@ -54,8 +54,18 @@ SELECT u.id as user_id,
 
     @Override
     public Optional<User> findById(Long id) {
-
-    
+  try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_BY_ID,
+            ResultSet.TYPE_SCROLL_INSENSITIV,
+            ResultSet.CONCUR_READ_ONLY);
+        statment.setLong(1,id);
+        try (ResultSet rs = statment.executeQuery()){
+            return Otional.ofNullable(UserRowMapper.MapRow(rs));
+        }
+    } catch (SQLExeption throwables){
+        throwables.printStackTrace();
+    } 
     
     }
 
