@@ -34,21 +34,59 @@ private final String CREATE = """
 
     @Override
     public Vaccinations getById(Long id) {
-        return null;
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_BY_ID);
+            statement.setLong(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                return Optional.ofNullable(Vaccinations.RowMapper.mapRow(rs));
+            }
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while finding vaccinations by id.");
+        }
+    }
     }
 
     @Override
     public Vaccinations update(Vaccinations vaccinations) {
-        return null;
-    }
+        try {      Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(UPDATE);
+            statement.setString(1, vacccinations.getADSM());
+             statement.setString(2, vaccinations.getHepatitisB());
+             statement.setString(3, vaccinations.getMeasles());
+             statement.setString(4, vaccinations.getRubella());
+             statement.setLong(5, vaccinations.getId());
+
+                  statement.executeUpdate();
+ } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while UDATAING vaccinations.");
+        }
+    
+    
 
     @Override
     public Vaccinations create(Vaccinations vaccinations) {
-        return null;
+               try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(CREATE);
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while CREATING vaccinations.");
+        }
+    
     }
 
     @Override
     public void delete(Long id) {
 
+           try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(DELETE);
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while DELETING vaccinations.");
+        }
     }
 }
