@@ -55,13 +55,27 @@ SELECT u.id as user_id,
     @Override
     public Optional<User> findById(Long id) {
   try {
+    //Созадали подключение к БД
             Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_ID,
+       // Выполнили действие с В БД с помощью prepareStatement (подготовка к запросу) и передали в него запро, а так же пожелания, что бы 
+        //ResultSet можно перемещать (прокручивать) как вперед, так и назад. 
+        //Ты также можешь перейти к позиции относительно текущей позиции или перейти к абсолютной позиции.
+        PreparedStatement statement = connection.prepareStatement(FIND_BY_ID,
             ResultSet.TYPE_SCROLL_INSENSITIV,
+          //  CONCUR_READ_ONLY означает, что ResultSet может быть только прочитан.                                         
             ResultSet.CONCUR_READ_ONLY);
+        //Интерфейс PreparedStatement содержит методы для установки строк — setString(),
+        //для установки чисел — setInt(), setLong(), setDouble(), для установки дат — setDate().
+        // первый параметр, определяет номер параметра номер параметра.
+        //второй Значение long, которое передается, у нас айди.
         statment.setLong(1,id);
+        //( далее с поомщью ExecuteQuery  выполнили запросов,при этом Возвращает объект ResultSet, который содержит все полученные данные.  2
+           // Возвращаемый ResultSet никогда не является нулевым, даже если нет записей, соответствующих запросу.  5
+           //а так же executeQuery Выбрасывает исключение, если запрос не возвращает ResultSet. 
         try (ResultSet rs = statment.executeQuery()){
-            return Otional.ofNullable(UserRowMapper.MapRow(rs));
+            //метод говорит, что не может быть нулл, иначе исключение.
+            // и результат в мэппер передаем, который создает объект мэппер и сеттает данные из бд в этот объект
+            return Optional.ofNullable(UserRowMapper.MapRow(rs));
         }
     } catch (SQLExeption throwables){
         throwables.printStackTrace();
