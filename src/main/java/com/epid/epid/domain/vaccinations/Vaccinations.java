@@ -5,9 +5,10 @@ import com.epid.epid.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import java.io.Serializable
 
 @Data
-public class Vaccinations {
+public class Vaccinations implements Serializable{
 
     @NotNull(message = "Id must be not null.", groups = OnUpdate.class)
     private Long id;
