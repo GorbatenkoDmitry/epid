@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+    
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-
+    @Cachable(value = "UserService::getById", key = '#id'")
     public User getById(
             final Long id
     ) {
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(readOnly = true)
+    @Cachable(value = "UserService::getByUsername", key = '#username'")
     public User getByUsername(
             final String username
     ) {
@@ -42,6 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Caching(put = {   
+        @Cacheput(value = "UserService::getById", key = '#id'")
+        @Cacheput(value = "UserService::getByUsername", key = '#username'")
+                   })
     public User update(
             final User user
     ) {
@@ -55,6 +61,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+      @Caching(Cachable = {   
+        @Cachable(value = "UserService::getById", key = '#id'")
+        @Cachable(value = "UserService::getByUsername", key = '#username'")
+                   })
     public User create(
             final User user
     ) {
@@ -76,8 +86,15 @@ public class UserServiceImpl implements UserService {
 
       @Override
       @Transactional(readOnly = true)
-
-      public void delete(Long id) {
-
+    @CacheEvict(value = "UserService::getById", key = '#id'")
+   public void delete(Long id) {
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(DELETE);
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while DELETING WORKER.");
+        }
     }
 }
