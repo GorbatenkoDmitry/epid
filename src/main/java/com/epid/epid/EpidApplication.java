@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
+	@EnableCaching
 public class EpidApplication {
 
 	public static void main(String[] args) {
