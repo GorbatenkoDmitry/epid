@@ -47,7 +47,7 @@ SELECT u.id as user_id,
             password = ?
             WHERE id = ?""";
 
-    private final String INSERT_USER_STATUS = """
+    private final String INSERT_USER_ROLE = """
           INSERT INTO users_roles (users_id,role)
             VALUES (?,?)""";
 
@@ -83,28 +83,79 @@ SELECT u.id as user_id,
     
     }
 
-    @Override
-    public Optional<User> findByUsername(String username) {
-        return Optional.empty();
+   
+
+
+@Override
+ public Optional<User> findByUsername(String username) {
+    try {
+            Connection connection = dataSourceConfig.getConnection();
+        PreparedStatement statement = connection.prepareStatement(FIND_BY_USERNAME);
+        statment.setString(1,username);
+      try (ResultSet rs = statement.executeQuery()) {
+                return Optional.ofNullable(UserRowMapper.mapRow(rs));
+            }
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while finding user by name,surname.");
+        }
     }
 
     @Override
     public void update(User user) {
+ try {      Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(UPDATE);
+            statement.setString(1, user.getName());
+      if(user.getSurname() ==null){
+statment.setNull(2, Types.VARCHAR);  
+} else {
+statment.setString(2, user.getSurname());  
+}
+             statement.setString(3, user.getRoles());
+             statement.setLong(4, user.getId());
 
+                  statement.executeUpdate();
+ } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while UDATAING USER.");
+        }
+    }
     }
 
     @Override
     public void create(User user) {
 
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(CREATE);
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while CREATING WORKER.");
+        }
     }
 
     @Override
     public void insertUserRole(Long id, Role role) {
+  try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(INSERT_USER_ROLE);
+            statement.setLong(1, id);
+            statement.setString(2,role.name());
+            statement.executeUpdate();
 
+      } catch (SQLException throwables) {
+            throw new ResourceMappingException("Exception while inserting user stats.");
+        }
     }
 
-    @Override
+   @Override
     public void delete(Long id) {
-
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(DELETE);
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while DELETING user.");
+        }
     }
 }
