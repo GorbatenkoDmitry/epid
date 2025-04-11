@@ -1,8 +1,9 @@
 package com.example.epid.web.security.expression;
 
-import com.example.epid.domain.user.Role;
-import com.example.epid.service.UserService;
-import com.example.epid.web.security.JwtEntity;
+import com.epid.epid.domain.user.Role;
+import com.epid.epid.service.UserService;
+import com.epid.epid.web.security.JwtEntity;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 //создаем новый бин 
 @Component("CustomSecurityExpression")
-  делает заполнение конструктора, потому что будем инжектить юзерсервис
+//  делает заполнение конструктора, потому что будем инжектить юзерсервис
 @RequiredArgsConstructor
 public class CustomSecurityExpression {
 //создали переменную юзерсервис
@@ -44,14 +45,6 @@ public class CustomSecurityExpression {
         return false;
     }
 
-    public boolean canAccessTask(
-            final Long taskId
-    ) {
-        JwtEntity user = getPrincipal();
-        Long id = user.getId();
-
-        return userService.isTaskOwner(id, taskId);
-    }
 
     private JwtEntity getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext()

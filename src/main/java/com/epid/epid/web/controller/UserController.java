@@ -11,6 +11,7 @@ import com.epid.epid.web.dto.validation.OnUpdate;
 import com.epid.epid.web.mappers.UserMapper;
 import com.epid.epid.web.mappers.VaccinationsMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class UserController {
 
 
     @PutMapping
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#dto.id)")
        public UserDto update(
             @Validated(OnUpdate.class) @RequestBody UserDto dto) {
         User user = userMapper.toEntity(dto);
@@ -36,12 +38,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-      public UserDto getById(@PathVariable Long id) {
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+
+    public UserDto getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return userMapper.toDto(user);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public void deleteById(@PathVariable Long id) {
         userService.delete(id);
     }

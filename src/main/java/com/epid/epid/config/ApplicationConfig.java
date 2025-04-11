@@ -2,13 +2,17 @@ package com.epid.epid.config;
 
 import com.epid.epid.web.security.JwtTokenFilter;
 import com.epid.epid.web.security.JwtTokenProvider;
+import com.epid.epid.web.security.expression.CustomSecurityExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,7 +30,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 //Далее уже пишем аннотацию,которая включит спринг секьюрити и в ней же будет происходить насттройка
 // Spring Security — это фреймворк на основе фильтров. Мы либо включаем существующий фильтр и настраиваем его, либодобавляем собственный фильтр.
 @EnableWebSecurity
-//и будем вызывать  конструкторы  со всем переменными
+//
+@EnableGlobalMethodSecurity(prePostEnabled = true)//и будем вызывать  конструкторы  со всем переменными
+
 @RequiredArgsConstructor
 public class ApplicationConfig {
     private final JwtTokenProvider tokenProvider;
@@ -50,6 +56,14 @@ public PasswordEncoder passwordEncoder() {
 return configuration.getAuthenticationManager();
     }
 
+
+    @Bean
+    public MethodSecurityExpressionHandler expressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler
+                = new CustomSecurityExceptiaddonHandler();
+        expressionHandler.setApplicationContext(applicationContext);
+        return expressionHandler;
+    }
 // SecurityFilterChain  класс в спринг секьюрити, который создан для настройки спринг секьюрити
 // которые могут выключать и включать, то есть настривать например переданный в параметры HttpSecurity
     // помечаем бин ччто бы его поместить в аппликатион контекст
