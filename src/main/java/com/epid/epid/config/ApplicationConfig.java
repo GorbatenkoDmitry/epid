@@ -60,7 +60,7 @@ return configuration.getAuthenticationManager();
     @Bean
     public MethodSecurityExpressionHandler expressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler
-                = new CustomSecurityExceptiaddonHandler();
+                = new CustomSecurityExceptionHandler();
         expressionHandler.setApplicationContext(applicationContext);
         return expressionHandler;
     }
