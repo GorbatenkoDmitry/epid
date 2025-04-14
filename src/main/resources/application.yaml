@@ -17,6 +17,8 @@ cache-names: redis-cache
       mode: always
       continue-on-error: false
 #      data-locations: classpath:demo_data.sql
+mybatis:
+mapper-locations: classpath:/mybatis/mapper/*.xml
 security:
   jwt:
     secret: Ynpma2poZ2t1c2h2c2liaHhpdXNicGl1YmlndWZkYnNucGlnZmINCg
