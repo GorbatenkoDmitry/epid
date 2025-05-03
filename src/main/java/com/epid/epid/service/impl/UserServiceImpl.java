@@ -23,78 +23,57 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cachable(value = "UserService::getById", key = '#id'")
-    public User getById(
-            final Long id
-    ) {
+//    @Cachable(value = "UserService::getById", key = "#id")
+    public User getById(final Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found."));
-    }
-    @Override
-    @Transactional(readOnly = true)
-    @Cachable(value = "UserService::getByUsername", key = '#username'")
-    public User getByUsername(
-            final String username
-    ) {
-        return userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found."));
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Caching(put = {   
-        @Cacheput(value = "UserService::getById", key = '#id'")
-        @Cacheput(value = "UserService::getByUsername", key = '#username'")
-                   })
-    public User update(
-            final User user
-    ) {
-        User existing = getById(user.getId());
-        existing.setName(user.getName());
-        user.setUsername(user.getUsername());
+  //  @Cacheable(value = "UserService::getByUsername", key = "#username")
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    }
+
+    @Override
+    @Transactional
+//    @Caching(put = {
+ //           @CachePut(value = "UserService::getById", key = "#user.id"),
+  //          @CachePut(value = "UserService::getByUsername", key = "#user.username")
+  ///  })
+    public User update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.update(user);
         return user;
     }
 
     @Override
-    @Transactional(readOnly = true)
-      @Caching(Cachable = {   
-        @Cachable(value = "UserService::getById", key = '#id'")
-        @Cachable(value = "UserService::getByUsername", key = '#username'")
-                   })
-    public User create(
-            final User user
-    ) {
+    @Transactional
+ //   @Caching(cacheable = {
+  //          @Cacheable(value = "UserService::getById", key = "#user.id"),
+  //          @Cacheable(value = "UserService::getByUsername", key = "#user.username")
+ //   })
+    public User create(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
         if (!user.getPassword().equals(user.getPasswordConfirmation())) {
-            throw new IllegalStateException(
-                    "Password and password confirmation do not match."
-            );
+            throw new IllegalStateException("Password and password confirmation do not match.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.create(user);
         Set<Role> roles = Set.of(Role.ROLE_USER);
+        userRepository.insertUserRole(user.getId(), Role.ROLE_USER);
         user.setRoles(roles);
-     //   userRepository.save(user);
-    //    mailService.sendEmail(user, MailType.REGISTRATION, new Properties());
         return user;
     }
-
-      @Override
-      @Transactional(readOnly = true)
-    @CacheEvict(value = "UserService::getById", key = '#id'")
-   public void delete(Long id) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement statement = connection.prepareStatement(DELETE);
-            statement.setLong(1, id);
-            statement.executeUpdate();
-        } catch (SQLException throwables) {
-            throw new ResourceMappingException("Error while DELETING WORKER.");
-        }
+    @Override
+    @Transactional
+  //  @CacheEvict(value = "UserService::getById", key = "#id")
+    public void delete(Long id) {
+        userRepository.delete(id);
     }
 }

@@ -13,7 +13,7 @@ public class WorkerRowMapper {
             Worker worker = new Worker();
             worker.setId(resultSet.getLong("worker_id"));
             worker.setName(resultSet.getString("worker_name"));
-            worker.setName(resultSet.getString("worker_surname"));
+            worker.setSurname(resultSet.getString("worker_surname"));
             return worker;
         }
 

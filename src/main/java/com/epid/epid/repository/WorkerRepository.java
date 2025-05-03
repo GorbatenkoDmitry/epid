@@ -2,9 +2,11 @@ package com.epid.epid.repository;
 
 import com.epid.epid.domain.worker.Status;
 import com.epid.epid.domain.worker.Worker;
-import org.springframework.data.repository.query.Param;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Optional;
+@Mapper
 
 public interface WorkerRepository {
 

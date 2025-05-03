@@ -1,1 +1,51 @@
+<?xml version"1.0." encoding "UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.epid.epid.repository.UserRepository">
+
+    <resultMap id="VaccinationsResultMap" type="com.epid.epid.domain.vaccinations.Vaccinations" autoMapping="false">
+        <id property="id" column="vaccinations_id"/>
+        <result property="worker_id" column="vaccinations_worker_id"/>
+        <result property="ADSM" column="vaccinations_ADSM"/>
+        <result property="HepatitisB" column="vaccinations_HepatitisB"/>
+        <result property="Measles" column="vaccinations_Measles"/>
+        <result property="Rubella" column="vaccinations_Rubella"/>
+
+
+    </resultMap>
+
+    <select id="findById" resultMap="UserResultMap">
+        SELECT v.id            as vaccinations_id,
+        v.id            as vaccinations_worker_id,
+        v.ADSM                as Vaccinations_ADSM,
+        v.HepatitisB          as Vaccinations_HepatitisB,
+        v.Measles             as Vaccinations_Measles,
+        v.Rubella             as Vaccinations_Rubella
+        FROM vaccinations v
+        WHERE u.id = #{id}
+    </select>
+
+    <update id="update">
+        UPDATE Vaccinations
+        SET
+        ADSM = #{ADSM},
+        HepatitisB = #{HepatitisB},
+        Measles = #{Measles},
+        Rubella = #{Rubella}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="create" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO Vaccinations (ADSM,HepatitisB,Measles,Rubella)
+        VALUES (#{ADSM}, #{HepatitisB}, #{Measles}, #{Rubella})
+
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM Vaccinations
+        WHERE id = #{id}
+    </delete>
+</mapper>
 

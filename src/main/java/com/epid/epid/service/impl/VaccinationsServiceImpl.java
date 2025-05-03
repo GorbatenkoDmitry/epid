@@ -1,25 +1,37 @@
 package com.epid.epid.service.impl;
 
+import com.epid.epid.domain.exception.ResourceNotFoundException;
 import com.epid.epid.domain.vaccinations.Vaccinations;
+import com.epid.epid.repository.UserRepository;
+import com.epid.epid.repository.VaccinationsRepository;
 import com.epid.epid.service.VaccinationsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 
 public class VaccinationsServiceImpl implements VaccinationsService {
+
+    private final VaccinationsRepository vaccinationsRepository;
+
     @Override
-    public Vaccinations getById(Long id) {
-        return null;
+    @Transactional(readOnly = true)
+ //   @Cachable(value = "VaccinationsService::getById", key = "#id")
+            public Vaccinations getById(Long id)  {
+        return vaccinationsRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found."));
     }
     @Override
     @Transactional(readOnly = true)
-    public Vaccinations getByName(String Name) {
-        return null;
-
+  //  @Cachable(value = "VaccinationsService::getByWorkerId", key = "#worker_id")
+    public Vaccinations getByWorkerId(Long worker_id)  {
+        return vaccinationsRepository.findByWorker_Id(worker_id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found."));
     }
-
-
 
     @Override
     @Transactional

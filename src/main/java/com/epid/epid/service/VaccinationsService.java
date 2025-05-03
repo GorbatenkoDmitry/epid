@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface VaccinationsService {
 
     Vaccinations getById(Long id);
-    Vaccinations getByName(String Name);
+    Vaccinations getByWorkerId(Long worker_id);
 
     Vaccinations update (Vaccinations vaccinations);
 

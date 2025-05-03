@@ -10,14 +10,11 @@ import com.epid.epid.repository.mappers.WorkerRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Repository
+//@Repository
 public class WorkerRepositoryImpl implements WorkerRepository {
 
     private final DataSourceConfig dataSourceConfig;
@@ -52,7 +49,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
             WHERE id = ?""";
 
     private final String INSERT_USER_STATUS = """
-          INSERT INTO worker_status (id,status)
+          INSERT INTO worker (id,status)
             VALUES (?,?)""";
 
     
@@ -90,10 +87,11 @@ public class WorkerRepositoryImpl implements WorkerRepository {
  try {      Connection connection = dataSourceConfig.getConnection();
             PreparedStatement statement = connection.prepareStatement(UPDATE);
             statement.setString(1, worker.getName());
-      if(worker.getSurname() ==null){
-statment.setNull(2, Types.VARCHAR);  
+
+      if(worker.getSurname() == null){
+statement.setNull(2, Types.VARCHAR);
 } else {
-statment.setString(2, worker.getSurname());  
+statement.setString(2, worker.getSurname());
 }
              statement.setString(3, worker.getStatus().name());
              statement.setLong(4, worker.getId());
@@ -110,7 +108,7 @@ statment.setString(2, worker.getSurname());
         try {
             Connection connection = dataSourceConfig.getConnection();
             PreparedStatement statement = connection.prepareStatement(CREATE);
-            statement.setLong(1, id);
+            statement.setLong(1, worker.getId());
             statement.executeUpdate();
         } catch (SQLException throwables) {
             throw new ResourceMappingException("Error while CREATING WORKER.");
@@ -131,22 +129,22 @@ statment.setString(2, worker.getSurname());
     }
 
     @Override
-    public void insertWorkerStatus(Long Id, Status status) 
-      try {
+    public void insertWorkerStatus(Long id, Status status) {
+        try {
             Connection connection = dataSourceConfig.getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_USER_STATUS);
             statement.setLong(1, id);
-            statement.setString(2,status.name());
+            statement.setString(2, status.name());
             statement.executeUpdate();
 
-      } catch (SQLException throwables) {
-            throw new ResourceMappingException("Exception while inserting user stats.");
+        } catch (SQLException throwables) {
+            throw new ResourceMappingException("Error while assigning to user.");
         }
+
+
     }
 
 
 
-
-
-
 }
+

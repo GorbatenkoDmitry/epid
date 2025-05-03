@@ -19,13 +19,13 @@ public class VaccinationsController {
     private final VaccinationsMapper vaccinationsMapper;
 
     @GetMapping("/{id}")
-    public VaccinationsDto getVaccinationsByWorkerId(@PathVariable Long id) {
+    public VaccinationsDto getVaccinationsById(@PathVariable Long id) {
         Vaccinations vaccinations = vaccinationsService.getById(id);
         return vaccinationsMapper.toDto(vaccinations);
     }
     @GetMapping("/{name}")
-    public VaccinationsDto getVaccinationsByWorkerId(@PathVariable String name) {
-        Vaccinations vaccinations = vaccinationsService.getByName(name);
+    public VaccinationsDto getVaccinationsByWorkerId(@PathVariable Long worker_id) {
+        Vaccinations vaccinations = vaccinationsService.getByWorkerId(worker_id);
         return vaccinationsMapper.toDto(vaccinations);
     }
     @PostMapping("/{id}/vaccinations/create")

@@ -22,7 +22,13 @@ public class UserDto {
 
     @NotNull(message = "Username must be not", groups = {OnCreate.class,OnUpdate.class})
     @Length(max = 255, message = "Length must be smaller,than 255 symbols")
+    private String surname;
+
+    @NotNull(message = "Username must be not", groups = {OnCreate.class,OnUpdate.class})
+    @Length(max = 255, message = "Length must be smaller,than 255 symbols")
     private String username;
+
+
 
     //Аннотация не дает через дто передавать данные о пароле фронту из БД
     //поэтому только принимает("читает") json  с фронта
