@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/worker")
 @RequiredArgsConstructor
 @Validated
+        @Tag(name = 'Контроллер для работы с данными работников', description = 'Worker API')
 public class WorkerController {
     private final WorkerMapper workerMapper;
 
