@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 //Аннотация @Validated активирует механизм валидации Spring на уровне методов.
 @Validated
+    //добавим аннотацию для сваггера, что он писал названия наши, а не просто класса.
+    @Tag(name = 'Контроллер авторизации', description = 'Auth API')
 public class AuthController {
 //создаем переменные файнал сервисов и мапперов нужных нам для логики класса и делаем их фанал, что бы они заавтовайрислись
     private final AuthService authService;
