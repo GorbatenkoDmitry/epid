@@ -58,6 +58,28 @@ return configuration.getAuthenticationManager();
 
 
     @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("bearerAuth"))
+                .components(
+                        new Components()
+                                .addSecuritySchemes("bearerAuth",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+                )
+                .info(new Info()
+                        .title("Task list API")
+                        .description("Demo Spring Boot application")
+                        .version("1.0")
+                );
+    }
+
+    
+    @Bean
     public MethodSecurityExpressionHandler expressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler
                 = new CustomSecurityExceptionHandler();
@@ -122,6 +144,8 @@ return configuration.getAuthenticationManager();
                 .requestMatchers("/swagger-ui/**")
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**")
+                .permitAll()
+                .requestMatchers("/swagger-ui/**")
                 .permitAll()
                 //остальные запросы (без настройки) только авторизованным
                 .anyRequest().authenticated())
