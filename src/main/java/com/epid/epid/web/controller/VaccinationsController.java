@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/worker/vaccinations")
 @RequiredArgsConstructor
 @Validated
+        @Tag(name = 'Контроллер для работы с данными вакцинации', description = 'Vac API')
 public class VaccinationsController {
     private final VaccinationsService vaccinationsService;
     private final VaccinationsMapper vaccinationsMapper;
