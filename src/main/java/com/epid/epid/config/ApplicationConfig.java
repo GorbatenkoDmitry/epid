@@ -55,7 +55,7 @@ public PasswordEncoder passwordEncoder() {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 return configuration.getAuthenticationManager();
     }
-
+//создаем конфигурацию, что бы в сваггере, при авторизации (введении дживити токена) не надо было затем повторно его вводить, а авторизация проходила и мы смотрели энпоинты доступные пользавателю
 
     @Bean
     public OpenAPI openAPI() {
@@ -71,6 +71,7 @@ return configuration.getAuthenticationManager();
                                                 .bearerFormat("JWT")
                                 )
                 )
+            // так же добавим информацию, которая будет описывать наше приложение на странице сваггера
                 .info(new Info()
                         .title("Task list API")
                         .description("Demo Spring Boot application")
@@ -140,6 +141,7 @@ return configuration.getAuthenticationManager();
 
     //requestMatchers конечная точка и проверка доступа permitAll-разрешать всем заъходить на эту страницу
                 configurer.requestMatchers("/api/v1/auth/**")
+                 //надо разрешить сваггеру его энпоинты, это основная ссылка+ с документацией, которая требуется сваггеру                      
                 .permitAll()
                 .requestMatchers("/swagger-ui/**")
                 .permitAll()
