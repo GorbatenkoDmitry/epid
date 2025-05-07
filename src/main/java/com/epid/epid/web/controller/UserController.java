@@ -28,9 +28,12 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-
+//@PreAuthorize,  с помощью него и выражений можно наглядно описать правила, следуя которым модуль авторизации решает, разрешить ли проведение операции или запретить.
+        //@PutMapping — аннотация для обработки HTTP PUT-запросов в Spring. Она сопоставляет запрос PUT с определённым методом обработчика в контроллере Spring
     @PutMapping
     @PreAuthorize("@customSecurityExpression.canAccessUser(#dto.id)")
+        //Operation c помощью саммари помогает передать описание метода
+         @Operation(summary = "Update user")
        public UserDto update(
             @Validated(OnUpdate.class) @RequestBody UserDto dto) {
         User user = userMapper.toEntity(dto);
@@ -40,7 +43,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-
+    @Operation(summary = "Get UserDto by id")
     public UserDto getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return userMapper.toDto(user);
@@ -48,6 +51,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+            @Operation(summary = "Delete user by id")
     public void deleteById(@PathVariable Long id) {
         userService.delete(id);
     }
